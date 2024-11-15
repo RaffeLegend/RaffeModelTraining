@@ -10,9 +10,6 @@ class TrainOptions(BaseOptions):
         self.pretrained = None
         self.arch_name = None
 
-        # Data augmentation
-        self.augmentation = None
-
         # Model Saving
         self.model_save_path = None
         self.save_best_only = None
@@ -42,7 +39,6 @@ class TrainOptions(BaseOptions):
 
         self.pretrained = args.pretrained
         self.arch_name = args.arch_name
-        self.augmentation = args.augmentation
         self.model_save_path = args.model_save_path
         self.save_best_only = args.save_best_only
         self.early_stopping = args.early_stopping
@@ -65,8 +61,6 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--pretrained', type=bool, default=True, help='load the pretrained model or not')
         parser.add_argument('--arch_name', type=str, default='resnet50', help='see my_models/__init__.py')
 
-        parser.add_argument('--augmentation', type=bool, default=True, help='data augment or not')
-
         parser.add_argument('--model_save_path', type=str, default='./', help='the saving path of trained model')
         parser.add_argument('--save_best_only', type=bool, default=False, help='save the best model or all the models')
         parser.add_argument('--early_stopping', type=int, default=30, help='the epoch of earlystopping')
@@ -84,5 +78,7 @@ class TrainOptions(BaseOptions):
 
         parser.add_argument('--show_loss_freq', type=int, default=400, help='frequency of showing loss on tensorboard')
         parser.add_argument('--save_epoch_freq', type=int, default=1, help='frequency of saving checkpoints at the end of epochs')
+
+        self.update(parser)
 
         return parser

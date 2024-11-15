@@ -8,79 +8,82 @@ class DataOptions(BaseOptions):
         self.augmentation = None
         self.image_height = None
         self.image_weight = None
-        self.normalization_mean = None
-        self.normalization_std  = None
+        self.normalization = None
         self.batch_size = None
         self.shuffle = None
-
         self.dataset_path = None
 
-        # self.pin_memory = None
-        #Testing O
-        self.test_batch_size = None
-        self.test_data_path = None
+    def update(self, args):
+        self.augmentation = args.augmentation
+        self.image_height = args.image_height
+        self.image_weight = args.image_weight
+        self.normalization = args.normalization
+        self.batch_size = args.batch_size
+        self.shuffle = args.shuffle
+        self.dataset_path = args.dataset_path
 
     def initialize(self, parser):
         parser = BaseOptions.initialize(self, parser)
-        parser.add_argument('--model_path')
-        parser.add_argument('--no_resize', action='store_true')
-        parser.add_argument('--no_crop', action='store_true')
-        parser.add_argument('--eval', action='store_true', help='use eval mode during test time.')
+        parser.add_argument('--image_height', type=int, default=256, help='image height')
+        parser.add_argument('--image_weight', type=int, default=256, help='image weight')        
+        parser.add_argument('--augmentation', type=bool, default=True, help='train should be true, val/test should be false')        
+        parser.add_argument('--normalization', type=str, default='imagenet', help='normalization params [imagenet, clip]')        
+        parser.add_argument('--batch_size', type=int, default=256, help='batch size of data')
+        parser.add_argument('--shuffle', type=bool, default=True, help='shuffle the data')
+        parser.add_argument('--dataset_path', type=str, default='', help='the path of dataset')        
 
-        self.isTrain = False
         return parser
     
 
-class TrainOptions(DataOptions):
+class TrainDataOptions(DataOptions):
     def __init__(self):
 
         # Data augmentation
-        self.augmentation = None
-        self.rz_interp = None
-        self.blur_prob = None
-        self.blur_sig = None
-        self.resize_or_crop = None
         self.no_flip = None
 
-        # Data loading
-        self.dataset_path = None
-        self.train_split = None
-        self.load_size = None
-        self.crop_size = None
-        
-        self.image_height = None
-        self.image_weight = None
-        self.normalization_mean = None
-        self.normalization_std  = None
-        self.batch_size = None
-        self.shuffle = None
-
-        self.dataset_path = None
-
-        # self.pin_memory = None
-        #Testing O
-        self.test_batch_size = None
-        self.test_data_path = None
+    def update(self, args):
+        self.no_flip = args.no_flip
 
     def initialize(self, parser):
-        parser = BaseOptions.initialize(self, parser)
+        parser = DataOptions.initialize(self, parser)
 
         # Data augmentation
-        parser.add_argument('--rz_interp', default='bilinear')
-        parser.add_argument('--blur_prob', type=float, default=0.5)
-        parser.add_argument('--blur_sig', default='0.0,3.0')
-        parser.add_argument('--resize_or_crop', type=str, default='scale_and_crop', help='scaling and cropping of images at load time [resize_and_crop|crop|scale_width|scale_width_and_crop|none]')
-        parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip the images for data augmentation')
+        parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip')
 
-        # Data loading
-        parser.add_argument('--loadSize', type=int, default=256, help='scale images to this size')
-        parser.add_argument('--cropSize', type=int, default=224, help='then crop to this size')
+        return parser
+    
 
+class ValDataOptions(DataOptions):
+    def __init__(self):
 
-        parser.add_argument('--model_path')
-        parser.add_argument('--no_resize', action='store_true')
-        parser.add_argument('--no_crop', action='store_true')
-        parser.add_argument('--eval', action='store_true', help='use eval mode during test time.')
+        # Data augmentation
+        self.no_flip = None
 
-        self.isTrain = False
+    def update(self, args):
+        self.augmentation = False
+
+    def initialize(self, parser):
+        parser = DataOptions.initialize(self, parser)
+
+        # Data augmentation
+        parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip')
+
+        return parser
+    
+class TestDataOptions(DataOptions):
+    def __init__(self):
+
+        # Data augmentation
+        self.no_flip = None
+
+    def update(self, args):
+        self.augmentation = False
+        self.batch_size = args.batch_size
+
+    def initialize(self, parser):
+        parser = DataOptions.initialize(self, parser)
+
+        # Data augmentation
+        parser.add_argument('--batch_size', type=int, default=1, help='batch size of testing data')
+
         return parser

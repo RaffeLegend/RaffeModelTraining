@@ -1,4 +1,4 @@
-from .base_options import BaseOptions
+from src.options.base_options import BaseOptions
 
 
 class TestOptions(BaseOptions):
