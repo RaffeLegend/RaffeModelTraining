@@ -72,6 +72,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--schedular', type=str, default='', help='the schedular of the learning rate decay')
         parser.add_argument('--beta', type=float, default=0.9, help='momentum term of adam')
         parser.add_argument('--weight_decay', type=float, default=0.0, help='loss weight for l2 reg')
+        parser.add_argument('--momentum', type=float, default=0.0, help='momentum of SGD optimizer')
 
         parser.add_argument('--init_type', type=str, default='normal', help='network initialization [normal|xavier|kaiming|orthogonal]')
         parser.add_argument('--init_gain', type=float, default=0.02, help='scaling factor for normal, xavier and orthogonal.')
