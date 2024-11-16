@@ -3,6 +3,8 @@ import sys
 import time
 from tensorboardX import SummaryWriter
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from data import create_dataloader
 from src.engine.trainer import Trainer
 from src.engine.validator import Validator
@@ -11,7 +13,6 @@ from src.options.val_options import ValOptions
 from src.options.data_options import TrainDataOptions, ValDataOptions
 from src.engine.strategy.earlystop import EarlyStopping
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Entrance
 if __name__ == '__main__':
