@@ -2,7 +2,7 @@ import torch.nn as nn
 from src.engine.base_trainer import BaseModel
 from src.engine.strategy.weights_init import init_weights
 from src.engine.strategy.optimizer import get_optimizer
-from models import get_model
+from src.models import Model
 
 class Trainer(BaseModel):
     def name(self):
@@ -11,7 +11,7 @@ class Trainer(BaseModel):
     def __init__(self, opt):
         super(Trainer, self).__init__(opt)
         self.opt = opt  
-        self.model = get_model(opt.arch)
+        self.model = Model(opt)
 
         if opt.fix_backbone:
             params = self.model.decoder.parameters()

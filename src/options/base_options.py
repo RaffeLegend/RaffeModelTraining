@@ -21,6 +21,8 @@ class BaseOptions(ABC):
 
         # Model Options
         self.num_classes = None
+        self.encoder = None
+        self.decoder = None
 
         # Distribution Options
         # self.distributed = None
@@ -41,6 +43,8 @@ class BaseOptions(ABC):
     def initialize(self, parser):
         parser.add_argument('--log_dir', type=str, default="./log_dir")
         parser.add_argument('--num_classes', type=int, default=1)
+        parser.add_argument('--encoder', type=str, default="Imagenet:resnet50")
+        parser.add_argument('--decoder', type=str, default="fc")
         
         parser.add_argument('--name', type=str, default='code_debug', help='name of the experiment. It decides where to store samples and models')
         self.initialized = True
