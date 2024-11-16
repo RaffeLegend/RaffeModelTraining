@@ -1,6 +1,6 @@
-from src.models.model_zoo.decoder.clip_models import CLIPModel
-from src.models.model_zoo.decoder.imagenet_models import ImagenetModel
-from models.model_zoo.encoder.classification.fc_layer import FCDecoder
+from src.models.model_zoo.encoder.clip_models import CLIPModel
+from src.models.model_zoo.encoder.imagenet_models import ImagenetModel
+from models.model_zoo.decoder.classification.fc_layer import FCDecoder
 
 from model_list import VALID_DECODER_NAMES, VALID_ENCODER_NAMES, CHANNELS
 
