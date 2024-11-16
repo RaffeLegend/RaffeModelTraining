@@ -30,7 +30,7 @@ class DataOptions(BaseOptions):
         parser.add_argument('--normalization', type=str, default='imagenet', help='normalization params [imagenet, clip]')        
         parser.add_argument('--batch_size', type=int, default=256, help='batch size of data')
         parser.add_argument('--shuffle', type=bool, default=True, help='shuffle the data')
-        parser.add_argument('--dataset_path', type=str, default='', help='the path of dataset')        
+        parser.add_argument('--dataset_path', type=str, default='/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/', help='the path of dataset')        
 
         return parser
     

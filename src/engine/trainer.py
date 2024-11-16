@@ -1,7 +1,7 @@
-import torch
 import torch.nn as nn
 from engine.base_trainer import BaseModel
 from strategy.weights_init import init_weights
+from engine.strategy.optimizer import get_optimizer
 from models import get_model
 
 class Trainer(BaseModel):
@@ -17,13 +17,8 @@ class Trainer(BaseModel):
             params = self.model.decoder.parameters()
         else:
             params = self.model.parameters()
-        
-        if opt.optim == 'adam':
-            self.optimizer = torch.optim.AdamW(params, lr=opt.lr, betas=(opt.beta1, 0.999), weight_decay=opt.weight_decay)
-        elif opt.optim == 'sgd':
-            self.optimizer = torch.optim.SGD(params, lr=opt.lr, momentum=0.0, weight_decay=opt.weight_decay)
-        else:
-            raise ValueError("optim should be [adam, sgd]")
+
+        self.optimizer = get_optimizer(params, opt)
 
         self.loss_fn = nn.BCEWithLogitsLoss()
 
