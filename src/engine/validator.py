@@ -1,7 +1,6 @@
 import torch
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
 from engine.base_trainer import BaseModel
-from models import get_model
 
 class Validator(BaseModel):
     def name(self):
