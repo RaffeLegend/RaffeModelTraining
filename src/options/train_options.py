@@ -5,7 +5,7 @@ class TrainOptions(BaseOptions):
     def __init__(self):
 
         self.isTrain = True
-        
+        self.initialized = False
         # Model Options
         self.pretrained = None
         self.arch_name = None

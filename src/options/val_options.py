@@ -2,6 +2,8 @@ from src.options.train_options import TrainOptions
 
 class ValOptions(TrainOptions):
     def __init__(self):
+
+        self.initialized = False
         self.metrics = None #accuracy, f1_score, precision
         self.model_path = None
 
@@ -10,8 +12,6 @@ class ValOptions(TrainOptions):
         args.augmentation = False
 
     def initialize(self, parser):
-
-        parser.add_argument('--model_path', type=str, default='', help="the model path need to be validated")
 
         self.isTrain = False
         return parser
