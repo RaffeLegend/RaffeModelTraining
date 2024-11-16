@@ -5,7 +5,7 @@ class TrainOptions(BaseOptions):
     def __init__(self):
 
         self.isTrain = True
-
+        
         # Model Options
         self.pretrained = None
         self.arch_name = None
@@ -81,5 +81,6 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--save_epoch_freq', type=int, default=1, help='frequency of saving checkpoints at the end of epochs')
 
         self.update(parser)
+        self.initialized = True
 
         return parser

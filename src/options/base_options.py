@@ -11,6 +11,7 @@ class BaseOptions(ABC):
 
         # General Options: device, log
         self.name = None # Experiment name
+        self.initialized = False
         # self.device = None
         # self.num_workerrs = None
         # self.seed = None
