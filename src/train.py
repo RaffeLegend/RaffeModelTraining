@@ -1,18 +1,17 @@
 import os
-import site
+import sys
 import time
 from tensorboardX import SummaryWriter
 
 from data import create_dataloader
 from src.engine.trainer import Trainer
 from src.engine.validator import Validator
-from options.train_options import TrainOptions
-from options.val_options import ValOptions
-from options.data_options import TrainDataOptions, ValDataOptions
+from src.options.train_options import TrainOptions
+from src.options.val_options import ValOptions
+from src.options.data_options import TrainDataOptions, ValDataOptions
 from src.engine.strategy.earlystop import EarlyStopping
 
-project_root = os.path.dirname(os.path.abspath(__file__))
-site.addsitedir(project_root)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Entrance
 if __name__ == '__main__':
