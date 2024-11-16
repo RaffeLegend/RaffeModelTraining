@@ -39,6 +39,8 @@ class BaseOptions(ABC):
         self.name = args.name
         self.log_dir = args.log_dir
         self.num_classes = args.num_classes
+        self.encoder = args.encoder
+        self.decoder = args.decoder
 
     def initialize(self, parser):
         parser.add_argument('--log_dir', type=str, default="./log_dir")
@@ -59,6 +61,7 @@ class BaseOptions(ABC):
 
         # get the basic options
         opt, _ = parser.parse_known_args()
+        self.update(opt)
         self.parser = parser
 
         return parser.parse_args()

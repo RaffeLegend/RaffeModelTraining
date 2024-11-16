@@ -55,8 +55,8 @@ class TrainOptions(BaseOptions):
         self.init_gain = args.init_gain
         self.loss_freq = args.show_loss_freq
 
-    def initialize(self, parser):
-        parser = BaseOptions.initialize(self, parser)
+    def initialize(self):
+        parser = BaseOptions.initialize(self)
         
         parser.add_argument('--pretrained', type=bool, default=True, help='load the pretrained model or not')
         parser.add_argument('--arch_name', type=str, default='resnet50', help='see my_models/__init__.py')
