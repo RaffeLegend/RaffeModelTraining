@@ -1,4 +1,5 @@
 import os
+import site
 import time
 from tensorboardX import SummaryWriter
 
@@ -9,6 +10,9 @@ from options.train_options import TrainOptions
 from options.val_options import ValOptions
 from options.data_options import TrainDataOptions, ValDataOptions
 from src.engine.strategy.earlystop import EarlyStopping
+
+project_root = os.path.dirname(os.path.abspath(__file__))
+site.addsitedir(project_root)
 
 # Entrance
 if __name__ == '__main__':
@@ -76,5 +80,5 @@ if __name__ == '__main__':
             else:
                 print("Early stopping.")
                 break
-            
+
         trainer.train()
