@@ -1,7 +1,7 @@
 import torch.nn as nn
-from engine.base_trainer import BaseModel
-from strategy.weights_init import init_weights
-from engine.strategy.optimizer import get_optimizer
+from src.engine.base_trainer import BaseModel
+from src.engine.strategy.weights_init import init_weights
+from src.engine.strategy.optimizer import get_optimizer
 from models import get_model
 
 class Trainer(BaseModel):
