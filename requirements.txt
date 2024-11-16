@@ -6,3 +6,6 @@ Pillow
 torch
 torchvision
 tensorboardX
+tqdm
+ftfy
+regex
