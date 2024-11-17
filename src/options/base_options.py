@@ -33,15 +33,15 @@ class BaseOptions(ABC):
         # Precision Options
         # self.mixed_precision = None
         # self.grad_clip = None
+        self.parser()
 
 
     @abstractmethod
     def update(self, args):
-        self.name = args.name
-        self.log_dir = args.log_dir
-        self.num_classes = args.num_classes
-        self.encoder = args.encoder
-        self.decoder = args.decoder
+        return 
+
+    def add_parser(self, parser):
+        return parser
 
     def initialize(self, parser):
         parser.add_argument('--log_dir', type=str, default="./log_dir")
@@ -51,7 +51,14 @@ class BaseOptions(ABC):
         
         parser.add_argument('--name', type=str, default='code_debug', help='name of the experiment. It decides where to store samples and models')
         self.initialized = True
-        return parser
+
+        self.name = parser.name
+        self.log_dir = parser.log_dir
+        self.num_classes = parser.num_classes
+        self.encoder = parser.encoder
+        self.decoder = parser.decoder
+
+        return self.add_parser(parser)
 
     def gather_options(self):
         # initialize parser with basic options
