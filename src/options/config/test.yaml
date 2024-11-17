@@ -18,7 +18,7 @@ train:
   isTrain: True
   pretrained: True
 
-  early_stopping: 30
+  earlystop_epoch: 30
   epochs: 100
   loss_function: "bce" #["bce", "adam"]
   optimizer: "sgd"
