@@ -32,6 +32,6 @@ class Model(nn.Module):
         name = self.opt.decoder
         assert name in VALID_DECODER_NAMES
         if name.startswith("fc"):
-            return FCDecoder(name)
+            return FCDecoder(self.opt)
         else:
             assert False

@@ -31,5 +31,7 @@ VALID_DECODER_NAMES = [
 
 CHANNELS = {
     "RN50" : 1024,
-    "ViT-L/14" : 768
+    "ViT-L/14" : 768,
+    "Imagenet:resnet50": 2048,
+    "vit_b_16": 768,
 }
