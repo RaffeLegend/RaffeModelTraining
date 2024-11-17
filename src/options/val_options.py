@@ -11,5 +11,5 @@ class ValOptions(TrainOptions):
         self.isTrain = False
         self.augmentation = False
 
-        parser.part_name = "val"
+        parser.option_part = "val"
         return parser
