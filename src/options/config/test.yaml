@@ -67,7 +67,7 @@ train_data:
   no_flip: False
   no_resize: False
 
-  rz_interp: ["bilinear,bicubic"]
+  rz_interp: ["bilinear", "bicubic"]
   blur_prob: 0.5
   blur_sig: [0.0,3.0]
   jpg_prob: 0.5
