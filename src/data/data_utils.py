@@ -42,9 +42,9 @@ def get_list(path, must_contain=''):
 
 # return data
 def get_data(opt):
-    if opt.get_data_from == "folder":
+    if opt.data_source == "folder":
         image, label = get_data_by_folder(opt)
-    elif opt.get_data_from == "list":
+    elif opt.data_source == "list":
         image, label = get_data_by_namelist(opt)
     else:
         raise ValueError("data should be loaded from folder or list")
@@ -181,19 +181,21 @@ def get_transformer(opt):
     stat_from = "imagenet" if opt.arch.lower().startswith("imagenet") else "clip"
 
     print("mean and std stats are from: ", stat_from)
-    if '2b' not in opt.arch:
-        print ("using Official CLIP's normalization")
-        transform = transforms.Compose([
-                rz_func,
-                transforms.Lambda(lambda img: data_augment(img, opt)),
-                crop_func,
-                flip_func,
-                transforms.ToTensor(),
-                transforms.Normalize( mean=MEAN[stat_from], std=STD[stat_from] ),
-            ])
-    else:
-        print ("Using CLIP 2B transform")
-        # to do
-        transform = None # will be initialized in trainer.py
+    
+    # to do ......
+    # if '2b' not in opt.arch:
+    print ("using Official CLIP's normalization")
+    transform = transforms.Compose([
+            rz_func,
+            transforms.Lambda(lambda img: data_augment(img, opt)),
+            crop_func,
+            flip_func,
+            transforms.ToTensor(),
+            transforms.Normalize( mean=MEAN[stat_from], std=STD[stat_from] ),
+        ])
+    # else:
+    #     print ("Using CLIP 2B transform")
+    #     # to do
+    #     transform = None # will be initialized in trainer.py
 
     return transform

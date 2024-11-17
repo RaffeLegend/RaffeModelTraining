@@ -40,6 +40,8 @@ test:
   
 train_data:
   task: "classification"
+  data_label: "train"
+  data_source: "folder"
   isTrain: True
   image_height: 256
   image_weight: 256
@@ -50,9 +52,15 @@ train_data:
   dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
   class_sampler: True
   num_threads: 2
+  no_crop: False
+  cropSize: 224
+  no_flip: False
+  no_resize: False
 
 val_data:
   task: "classification"
+  data_label: "val"
+  data_source: "folder"
   isTrain: False
   image_height: 256
   image_weight: 256
@@ -63,9 +71,15 @@ val_data:
   dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
   class_sampler: True
   num_threads: 2
+  no_crop: False
+  cropSize: 224
+  no_flip: True
+  no_resize: True
 
 test_data:
   task: "classification"
+  data_label: "test"
+  data_source: "folder"
   isTrain: False
   image_height: 256
   image_weight: 256
@@ -76,6 +90,10 @@ test_data:
   dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
   class_sampler: False
   num_threads: 1
+  no_crop: False
+  cropSize: 224
+  no_flip: True
+  no_resize: True
 
   
   
