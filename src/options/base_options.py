@@ -30,7 +30,6 @@ class BaseOptions(ABC):
 
         # get the basic options
         opt, _ = parser.parse_known_args()
-        self.update(opt)
         self.parser = parser
 
         return parser.parse_args()
