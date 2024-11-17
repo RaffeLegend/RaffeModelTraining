@@ -7,10 +7,9 @@ class ValOptions(TrainOptions):
         self.metrics = None #accuracy, f1_score, precision
         self.model_path = None
 
-    def update(self, args):
-
-        args.augmentation = False
-
     def initialize(self, parser):
         self.isTrain = False
+        self.augmentation = False
+
+        parser.part_name = "val"
         return parser
