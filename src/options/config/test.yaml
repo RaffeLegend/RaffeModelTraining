@@ -39,6 +39,7 @@ test:
   no_crop: True
   
 train_data:
+  task: "classification"
   isTrain: True
   image_height: 256
   image_weight: 256
@@ -51,6 +52,7 @@ train_data:
   num_threads: 2
 
 val_data:
+  task: "classification"
   isTrain: False
   image_height: 256
   image_weight: 256
@@ -63,6 +65,7 @@ val_data:
   num_threads: 2
 
 test_data:
+  task: "classification"
   isTrain: False
   image_height: 256
   image_weight: 256
