@@ -178,7 +178,7 @@ def get_transformer(opt):
     else:
         rz_func = transforms.Lambda(lambda img: custom_resize(img, opt))
         
-    stat_from = "imagenet" if opt.arch.lower().startswith("imagenet") else "clip"
+    stat_from = "imagenet" if opt.encoder.lower().startswith("imagenet") else "clip"
 
     print("mean and std stats are from: ", stat_from)
     

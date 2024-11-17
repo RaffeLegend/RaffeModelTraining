@@ -1,13 +1,17 @@
-general:
+general: &general
   name: "debug"
   seed: 42
   device: "cuda"
   log_dir: "./log_dir"
   num_classes: 1
+  task: "classification"
   encoder: "Imagenet:resnet50"
   decoder: "fc"
+  data_source: "folder" # choose from ["folder", "list"]
+  dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
 
 train:
+  <<: *general
   isTrain: True
   pretrained: True
 
@@ -29,9 +33,11 @@ train:
   save_best_only: False
 
 val:
+  <<: *general
   isTrain: False
 
 test:
+  <<: *general
   isTrain: False
   model_path: "./"
   result_save_path: "./"
@@ -39,7 +45,7 @@ test:
   no_crop: True
   
 train_data:
-  task: "classification"
+  <<: *general
   data_label: "train"
   data_source: "folder"
   isTrain: True
@@ -49,7 +55,6 @@ train_data:
   normalization: True
   batch_size: 256
   shuffle: True
-  dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
   class_sampler: True
   num_threads: 2
   no_crop: False
@@ -58,7 +63,7 @@ train_data:
   no_resize: False
 
 val_data:
-  task: "classification"
+  <<: *general
   data_label: "val"
   data_source: "folder"
   isTrain: False
@@ -68,7 +73,6 @@ val_data:
   normalization: True
   batch_size: 256
   shuffle: False
-  dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
   class_sampler: True
   num_threads: 2
   no_crop: False
@@ -77,9 +81,7 @@ val_data:
   no_resize: True
 
 test_data:
-  task: "classification"
-  data_label: "test"
-  data_source: "folder"
+  <<: *general
   isTrain: False
   image_height: 256
   image_weight: 256
@@ -87,7 +89,6 @@ test_data:
   normalization: True
   batch_size: 1
   shuffle: False
-  dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
   class_sampler: False
   num_threads: 1
   no_crop: False
