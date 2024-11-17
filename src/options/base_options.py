@@ -17,7 +17,7 @@ class BaseOptions(ABC):
         parser.add_argument('--decoder', type=str, default="fc")
         
         parser.add_argument('--name', type=str, default='code_debug', help='name of the experiment. It decides where to store samples and models')
-        parser.add_argument('--part_name', type=str, default="base", help='distinguish train, validation and test')
+        parser.add_argument('--option_part', type=str, default="base", help='distinguish train, validation and test')
 
         self.initialized = True
 
@@ -38,14 +38,14 @@ class BaseOptions(ABC):
 
     def print_options(self, opt):
         message = ''
-        message += '----------------- Options: ' + opt.part_name + '---------------\n'
+        message += '----------------- Options: ' + opt.option_part + '---------------\n'
         for k, v in sorted(vars(opt).items()):
             comment = ''
             default = self.parser.get_default(k)
             if v != default:
                 comment = '\t[default: %s]' % str(default)
             message += '{:>25}: {:<30}{}\n'.format(str(k), str(v), comment)
-        message += '----------------- End: ' + opt.part_name + '-------------------'
+        message += '----------------- End: ' + opt.option_part + '-------------------'
         print(message)
 
         # save to the disk
