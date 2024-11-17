@@ -1,11 +1,11 @@
 import argparse
 from src.options.yaml_options import YAMLOptions
 
-class DictToClass:
+class Options:
     def __init__(self, data: dict):
         for key, value in data.items():
             if isinstance(value, dict):  # If value is a dictionary, recursively convert
-                setattr(self, key, DictToClass(value))
+                setattr(self, key, Options(value))
             else:
                 setattr(self, key, value)
 
@@ -13,7 +13,7 @@ class DictToClass:
         attributes = {attr: getattr(self, attr) for attr in self.__dict__.keys()}
         print("Class Attributes:")
         for key, value in attributes.items():
-            if isinstance(value, DictToClass):
+            if isinstance(value, Options):
                 print(f"  {key}:")
                 value.display_attributes()  # Recursively display nested attributes
             else:
@@ -34,7 +34,7 @@ def config_settings():
     # Display all parameters
     config.display_params()
 
-    options = DictToClass(config._load_yaml())
+    options = Options(config._load_yaml())
 
     return options
 

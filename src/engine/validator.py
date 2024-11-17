@@ -1,4 +1,6 @@
 import torch
+import copy
+import numpy as np
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
 from engine.base_trainer import BaseModel
 
@@ -40,7 +42,7 @@ class Validator(BaseModel):
         best_acc = 0 
         best_thres = 0 
         for thres in y_pred:
-            temp = deepcopy(y_pred)
+            temp = copy.deepcopy(y_pred)
             temp[temp>=thres] = 1 
             temp[temp<thres] = 0 
 
@@ -54,7 +56,7 @@ class Validator(BaseModel):
     def forward(self):
         with torch.no_grad():
             y_true, y_pred = [], []
-            print ("Length of dataset: %d" %(len(loader)))
+            print ("Length of dataset: %d" %(len(self.loader)))
             for img, label in self.loader:
                 in_tens = img.cuda()
 

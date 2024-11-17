@@ -22,7 +22,7 @@ class Trainer(BaseModel):
 
         self.loss_fn = nn.BCEWithLogitsLoss()
 
-        self.model.to(opt.gpu_ids[0])
+        self.model.to(opt.gpus[0])
 
 
     def adjust_learning_rate(self, min_lr=1e-6):

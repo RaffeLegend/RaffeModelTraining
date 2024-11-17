@@ -19,7 +19,7 @@ class Model(nn.Module):
         return output
 
     def get_encoder(self):
-        name = self.opt.encoder_name
+        name = self.opt.encoder
         assert name in VALID_ENCODER_NAMES
         if name.startswith("Imagenet:"):
             return ImagenetModel(name[9:]) 
@@ -29,7 +29,7 @@ class Model(nn.Module):
             assert False 
 
     def get_decoder(self):
-        name = self.opt.decoder_name
+        name = self.opt.decoder
         assert name in VALID_DECODER_NAMES
         if name.startswith("fc"):
             return FCDecoder(name)

@@ -1,7 +1,9 @@
 general: &general
   name: "debug"
+  model_name: "test_model"
   seed: 42
   device: "cuda"
+  gpus: [0, 1]
   log_dir: "./log_dir"
   num_classes: 1
   task: "classification"
@@ -9,6 +11,7 @@ general: &general
   decoder: "fc"
   data_source: "folder" # choose from ["folder", "list"]
   dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
+  checkpoints_dir: "/mnt/data2/users/hilight/yiwei/train/checkpoints/"
 
 train:
   <<: *general
@@ -29,8 +32,10 @@ train:
 
   show_loss_freq: 400
   save_epoch_freq: 10
-  model_save_path: "./"
+  model_save_path: "/mnt/data2/users/hilight/yiwei/train/models/"
   save_best_only: False
+
+  fix_backbone: False
 
 val:
   <<: *general
