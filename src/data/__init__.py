@@ -18,9 +18,9 @@ def get_bal_sampler(dataset):
 def create_dataloader(opt):
 
     if opt.task == "classification":
-        from classification.dataset import RealFakeDataset
+        from src.data.classification.dataset import RealFakeDataset
     elif opt.task == "segmentation":
-        from segmentation.dataset import RealFakeDataset
+        from src.data.segmentation.dataset import RealFakeDataset
 
     dataset = RealFakeDataset(opt)
 
