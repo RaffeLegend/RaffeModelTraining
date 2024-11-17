@@ -34,7 +34,7 @@ def config_settings():
     # Display all parameters
     config.display_params()
 
-    options = DictToClass(config)
+    options = DictToClass(config._load_yaml())
 
     return options
 

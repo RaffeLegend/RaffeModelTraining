@@ -9,3 +9,4 @@ tensorboardX
 tqdm
 ftfy
 regex
+pyyaml
