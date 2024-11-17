@@ -12,7 +12,7 @@ class TestOptions(BaseOptions):
         self.metrics = None #accuracy, f1_score, precision
 
     def initialize(self, parser):
-        # parser = BaseOptions.initialize(self, parser)
+        parser = BaseOptions.initialize(self, parser)
         parser.add_argument('--result_save_path', default='binary')
         parser.add_argument('--model_path')
         parser.add_argument('--no_resize', action='store_true')

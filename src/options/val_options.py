@@ -8,6 +8,7 @@ class ValOptions(TrainOptions):
         self.model_path = None
 
     def initialize(self, parser):
+        parser = TrainOptions.initialize(self, parser)
         self.isTrain = False
         self.augmentation = False
 
