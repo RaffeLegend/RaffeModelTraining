@@ -4,6 +4,7 @@ from .base_options import BaseOptions
 class DataOptions(BaseOptions):
     def __init__(self):
 
+        self.name = None
         # Data augmentation
         self.augmentation = None
         self.image_height = None
@@ -23,7 +24,7 @@ class DataOptions(BaseOptions):
         self.dataset_path = args.dataset_path
 
     def initialize(self, parser):
-        parser = BaseOptions.initialize(self, parser)
+
         parser.add_argument('--image_height', type=int, default=256, help='image height')
         parser.add_argument('--image_weight', type=int, default=256, help='image weight')        
         parser.add_argument('--augmentation', type=bool, default=True, help='train should be true, val/test should be false')        
@@ -39,17 +40,14 @@ class TrainDataOptions(DataOptions):
     def __init__(self):
 
         # Data augmentation
-        self.no_flip = None
+        self.name = None
 
     def update(self, args):
-        self.no_flip = args.no_flip
+
+        self.isTrain = True
+        self.name = "train"
 
     def initialize(self, parser):
-        parser = DataOptions.initialize(self, parser)
-
-        # Data augmentation
-        parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip')
-
         return parser
     
 
@@ -61,13 +59,10 @@ class ValDataOptions(DataOptions):
 
     def update(self, args):
         self.augmentation = False
+        self.shuffle = False
+        self.name = "val"
 
     def initialize(self, parser):
-        parser = DataOptions.initialize(self, parser)
-
-        # Data augmentation
-        parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip')
-
         return parser
     
 class TestDataOptions(DataOptions):
@@ -78,11 +73,12 @@ class TestDataOptions(DataOptions):
 
     def update(self, args):
         self.augmentation = False
+        self.shuffle = False
         self.batch_size = args.batch_size
 
-    def initialize(self, parser):
-        parser = DataOptions.initialize(self, parser)
+        self.name = "test"
 
+    def initialize(self, parser):
         # Data augmentation
         parser.add_argument('--batch_size', type=int, default=1, help='batch size of testing data')
 

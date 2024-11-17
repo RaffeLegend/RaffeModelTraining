@@ -4,7 +4,6 @@ from src.options.base_options import BaseOptions
 class TrainOptions(BaseOptions):
     def __init__(self):
 
-        self.isTrain = True
         self.initialized = False
         # Model Options
         self.pretrained = None
@@ -55,9 +54,10 @@ class TrainOptions(BaseOptions):
         self.init_gain = args.init_gain
         self.loss_freq = args.show_loss_freq
 
+        self.isTrain = True
+
     def initialize(self, parser):
-        # parser = BaseOptions.initialize(self)
-        
+
         parser.add_argument('--pretrained', type=bool, default=True, help='load the pretrained model or not')
         parser.add_argument('--arch_name', type=str, default='resnet50', help='see my_models/__init__.py')
 

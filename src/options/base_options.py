@@ -7,7 +7,9 @@ import torch
 # define the base options of the tasks
 class BaseOptions(ABC):
     def __init__(self):
-        # self.initialized = False
+
+        self.initialized = False
+        self.isTrain = True
 
         # General Options: device, log
         self.name = None # Experiment name
