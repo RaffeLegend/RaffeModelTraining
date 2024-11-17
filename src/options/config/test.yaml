@@ -1,0 +1,69 @@
+general:
+  name: "debug"
+  seed: 42
+  device: "cuda"
+  log_dir: "./log_dir"
+  num_classes: 1
+  encoder: "Imagenet:resnet50"
+  decoder: "fc"
+
+train:
+  isTrain: True
+  pretrained: True
+
+  early_stopping: 30
+  epochs: 100
+  loss_function: "bce" #["bce", "adam"]
+  optimizer: "sgd"
+  schedular:
+  beta: 0.9
+  weight_decay: 0.0
+  momentum: 0.0
+  learning_rate: 0.001
+  init_type: "normal" #network initialization [normal|xavier|kaiming|orthogonal]
+  init_gain: 0.02
+
+  show_loss_freq: 400
+  save_epoch_freq: 10
+  model_save_path: "./"
+  save_best_only: False
+
+val:
+  isTrain: False
+
+test:
+  isTrain: False
+  model_path: "./"
+  result_save_path: "./"
+  no_resize: True
+  no_crop: True
+  
+train_data:
+  image_height: 256
+  image_weight: 256
+  augmentation: True
+  normalization: True
+  batch_size: 256
+  shuffle: True
+  dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
+
+val_data:
+  image_height: 256
+  image_weight: 256
+  augmentation: False
+  normalization: True
+  batch_size: 256
+  shuffle: False
+  dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
+
+test_data:
+  image_height: 256
+  image_weight: 256
+  augmentation: False
+  normalization: True
+  batch_size: 1
+  shuffle: False
+  dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
+
+  
+  

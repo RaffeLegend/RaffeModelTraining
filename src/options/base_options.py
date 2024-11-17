@@ -45,7 +45,7 @@ class BaseOptions(ABC):
             if v != default:
                 comment = '\t[default: %s]' % str(default)
             message += '{:>25}: {:<30}{}\n'.format(str(k), str(v), comment)
-        message += '----------------- End: ' + opt.option_part + '-------------------'
+        message += '--------------------- End: ' + opt.option_part + '---------------'
         print(message)
 
         # save to the disk
