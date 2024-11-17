@@ -27,8 +27,4 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--show_loss_freq', type=int, default=400, help='frequency of showing loss on tensorboard')
         parser.add_argument('--save_epoch_freq', type=int, default=1, help='frequency of saving checkpoints at the end of epochs')
 
-
-        parser.add_argument('--part_name', type=str, default="train", help='distinguish train, validation and test')
-        self.initialized = True
-
         return parser

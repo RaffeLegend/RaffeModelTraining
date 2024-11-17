@@ -51,7 +51,7 @@ class BaseOptions(ABC):
         # save to the disk
         expr_dir = os.path.join(opt.log_dir, opt.name)
         mkdirs(expr_dir)
-        file_name = os.path.join(expr_dir, opt.part_name + 'opt.txt')
+        file_name = os.path.join(expr_dir, opt.option_part + '_opt.txt')
         with open(file_name, 'wt') as opt_file:
             opt_file.write(message)
             opt_file.write('\n')
