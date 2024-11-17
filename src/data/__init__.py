@@ -16,7 +16,6 @@ def get_bal_sampler(dataset):
 
 
 def create_dataloader(opt):
-    shuffle = not opt.serial_batches if (opt.isTrain and not opt.class_sampler) else False
 
     if opt.task == "classification":
         from classification.dataset import RealFakeDataset
@@ -29,7 +28,7 @@ def create_dataloader(opt):
 
     data_loader = torch.utils.data.DataLoader(dataset,
                                               batch_size=opt.batch_size,
-                                              shuffle=shuffle,
+                                              shuffle=opt.shuffle,
                                               sampler=sampler,
                                               num_workers=int(opt.num_threads))
     return data_loader

@@ -39,6 +39,7 @@ test:
   no_crop: True
   
 train_data:
+  isTrain: True
   image_height: 256
   image_weight: 256
   augmentation: True
@@ -46,8 +47,11 @@ train_data:
   batch_size: 256
   shuffle: True
   dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
+  class_sampler: True
+  num_threads: 2
 
 val_data:
+  isTrain: False
   image_height: 256
   image_weight: 256
   augmentation: False
@@ -55,8 +59,11 @@ val_data:
   batch_size: 256
   shuffle: False
   dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
+  class_sampler: True
+  num_threads: 2
 
 test_data:
+  isTrain: False
   image_height: 256
   image_weight: 256
   augmentation: False
@@ -64,6 +71,8 @@ test_data:
   batch_size: 1
   shuffle: False
   dataset_path: "/mnt/data2/users/hilight/yiwei/dataset/FakeSocial/"
+  class_sampler: False
+  num_threads: 1
 
   
   
