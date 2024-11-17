@@ -158,7 +158,7 @@ rz_dict = {'bilinear': Image.BILINEAR,
 
 def custom_resize(img, opt):
     interp = sample_discrete(opt.rz_interp)
-    return TF.resize(img, opt.loadSize, interpolation=rz_dict[interp])
+    return TF.resize(img, opt.image_height, interpolation=rz_dict[interp])
 
 
 def get_transformer(opt):

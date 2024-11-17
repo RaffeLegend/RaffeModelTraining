@@ -66,6 +66,7 @@ train_data:
   cropSize: 224
   no_flip: False
   no_resize: False
+  rz_interp: "bilinear"
 
 val_data:
   <<: *general
