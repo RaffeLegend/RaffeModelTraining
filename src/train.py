@@ -18,10 +18,10 @@ from src.engine.strategy.earlystop import EarlyStopping
 if __name__ == '__main__':
 
     # define training and validation options
-    train_opt = TrainOptions()
-    val_opt = ValOptions()
-    train_data_opt = TrainDataOptions()
-    val_data_opt = ValDataOptions()
+    train_opt = TrainOptions().parse()
+    val_opt = ValOptions().parse()
+    train_data_opt = TrainDataOptions().parse()
+    val_data_opt = ValDataOptions().parse()
 
      # get data
     data_loader = create_dataloader(train_data_opt)

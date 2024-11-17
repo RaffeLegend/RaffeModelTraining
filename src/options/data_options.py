@@ -5,23 +5,6 @@ class DataOptions(BaseOptions):
     def __init__(self):
 
         self.name = None
-        # Data augmentation
-        self.augmentation = None
-        self.image_height = None
-        self.image_weight = None
-        self.normalization = None
-        self.batch_size = None
-        self.shuffle = None
-        self.dataset_path = None
-
-    def update(self, args):
-        self.augmentation = args.augmentation
-        self.image_height = args.image_height
-        self.image_weight = args.image_weight
-        self.normalization = args.normalization
-        self.batch_size = args.batch_size
-        self.shuffle = args.shuffle
-        self.dataset_path = args.dataset_path
 
     def initialize(self, parser):
 
@@ -42,11 +25,6 @@ class TrainDataOptions(DataOptions):
         # Data augmentation
         self.name = None
 
-    def update(self, args):
-
-        self.isTrain = True
-        self.name = "train"
-
     def initialize(self, parser):
         return parser
     
@@ -57,11 +35,6 @@ class ValDataOptions(DataOptions):
         # Data augmentation
         self.no_flip = None
 
-    def update(self, args):
-        self.augmentation = False
-        self.shuffle = False
-        self.name = "val"
-
     def initialize(self, parser):
         return parser
     
@@ -70,13 +43,6 @@ class TestDataOptions(DataOptions):
 
         # Data augmentation
         self.no_flip = None
-
-    def update(self, args):
-        self.augmentation = False
-        self.shuffle = False
-        self.batch_size = args.batch_size
-
-        self.name = "test"
 
     def initialize(self, parser):
         # Data augmentation

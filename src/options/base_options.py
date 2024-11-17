@@ -2,7 +2,6 @@ import argparse
 import os
 from abc import ABC, abstractmethod
 from src.utils.tools import mkdirs
-import torch
 
 # define the base options of the tasks
 class BaseOptions(ABC):
@@ -10,40 +9,6 @@ class BaseOptions(ABC):
 
         self.initialized = False
         self.isTrain = True
-
-        # General Options: device, log
-        self.name = None # Experiment name
-        self.initialized = False
-        # self.device = None
-        # self.num_workerrs = None
-        # self.seed = None
-
-        # self.task = None
-
-        self.log_dir = None
-
-        # Model Options
-        self.num_classes = None
-        self.encoder = None
-        self.decoder = None
-
-        # Distribution Options
-        # self.distributed = None
-        # self.local_rank = None
-        # self.world_size = None
-
-        # Precision Options
-        # self.mixed_precision = None
-        # self.grad_clip = None
-        self.parser()
-
-
-    @abstractmethod
-    def update(self, args):
-        return 
-
-    def add_parser(self, parser):
-        return parser
 
     def initialize(self, parser):
         parser.add_argument('--log_dir', type=str, default="./log_dir")
@@ -54,13 +19,7 @@ class BaseOptions(ABC):
         parser.add_argument('--name', type=str, default='code_debug', help='name of the experiment. It decides where to store samples and models')
         self.initialized = True
 
-        self.name = parser.name
-        self.log_dir = parser.log_dir
-        self.num_classes = parser.num_classes
-        self.encoder = parser.encoder
-        self.decoder = parser.decoder
-
-        return self.add_parser(parser)
+        return parser
 
     def gather_options(self):
         # initialize parser with basic options

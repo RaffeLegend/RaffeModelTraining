@@ -2,62 +2,9 @@ from src.options.base_options import BaseOptions
 
 
 class TrainOptions(BaseOptions):
-    def __init__(self):
-
-        self.initialized = False
-        # Model Options
-        self.pretrained = None
-        self.arch_name = None
-
-        # Model Saving
-        self.model_save_path = None
-        self.save_best_only = None
-        self.early_stopping = None
-        self.save_epoch_freq = None
-
-        # Training Options
-        self.epochs = None
-        self.loss_function = None
-
-        # Training strategy
-        self.learning_rate = None
-        self.optimizer = None
-        self.momentum = None
-        self.weight_decay = None
-        self.schedular = None # stepLR # CosineAnnealingLR
-        self.beta = None # momentum term of adam
-
-        # Initial strategy
-        self.init_type = None
-        self.init_gain = None
-
-        # show
-        self.loss_freq = None
-
-    def update(self, args):
-
-        self.pretrained = args.pretrained
-        self.arch_name = args.arch_name
-        self.model_save_path = args.model_save_path
-        self.save_best_only = args.save_best_only
-        self.early_stopping = args.early_stopping
-        self.save_epoch_freq = args.save_epoch_freq
-        self.epochs = args.epochs
-        self.loss_function = args.loss_function
-        self.learning_rate = args.learning_rate
-        self.optimizer = args.optimizer
-        self.momentum = args.momentum
-        self.weight_decay = args.weight_decay
-        self.schedular = args.schedular # stepLR # CosineAnnealingLR
-        self.beta = args.beta # momentum term of adam
-        self.init_type = args.init_type
-        self.init_gain = args.init_gain
-        self.loss_freq = args.show_loss_freq
-
-        self.isTrain = True
 
     def initialize(self, parser):
-
+        parser = BaseOptions.initialize(self, parser)
         parser.add_argument('--pretrained', type=bool, default=True, help='load the pretrained model or not')
         parser.add_argument('--arch_name', type=str, default='resnet50', help='see my_models/__init__.py')
 

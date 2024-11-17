@@ -12,6 +12,5 @@ class ValOptions(TrainOptions):
         args.augmentation = False
 
     def initialize(self, parser):
-
         self.isTrain = False
         return parser
