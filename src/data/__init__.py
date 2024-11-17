@@ -24,11 +24,11 @@ def create_dataloader(opt):
 
     dataset = RealFakeDataset(opt)
 
-    sampler = get_bal_sampler(dataset) if opt.class_sampler else None
+    # sampler = get_bal_sampler(dataset) if opt.class_sampler else None
 
     data_loader = torch.utils.data.DataLoader(dataset,
                                               batch_size=opt.batch_size,
                                               shuffle=opt.shuffle,
-                                              sampler=sampler,
+                                              sampler=WeightedRandomSampler,
                                               num_workers=int(opt.num_threads))
     return data_loader
