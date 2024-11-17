@@ -14,7 +14,7 @@ class Model(nn.Module):
         self.decoder = self.get_decoder()     
 
     def forward(self, x):
-        feature = self.encoder(x)["penultimate"]
+        feature = self.encoder(x)
         output  = self.decoder(feature)
         return output
 
