@@ -31,7 +31,8 @@ if __name__ == '__main__':
 
     # define training settings: optim, loss, model, learning rate, etc.
     trainer = Trainer(opt.train)
-    validator = Validator(opt.val).update(trainer.model, val_loader)
+    validator = Validator(opt.val)
+    validator.update(trainer.model, val_loader)
     
     # record the training summary
     train_writer = SummaryWriter(os.path.join(opt.general.log_dir, opt.general.name, "train"))
