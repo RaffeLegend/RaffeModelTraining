@@ -69,7 +69,8 @@ if __name__ == '__main__':
 
         # Validation
         trainer.eval()
-        ap, r_acc, f_acc, acc = validator.evaluation()
+        validator.forward()
+        ap, r_acc, f_acc, acc = validator.evaluate()
         val_writer.add_scalar('accuracy', acc, trainer.total_steps)
         val_writer.add_scalar('ap', ap, trainer.total_steps)
         print("(Val @ epoch {}) acc: {}; ap: {}".format(epoch, acc, ap))

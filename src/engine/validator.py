@@ -65,7 +65,7 @@ class Validator(BaseModel):
 
         self.y_true, self.y_pred = np.array(y_true), np.array(y_pred)
 
-    def evaluation(self):
+    def evaluate(self):
         best_thres = self.find_best_threshold(self.y_true, self.y_pred)
         self.ap = average_precision_score(self.y_true, self.y_pred)
         self.r_acc0, self.f_acc0, self.acc0 = self.calculate_acc(self.y_true, self.y_pred, 0.5)
