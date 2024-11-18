@@ -70,3 +70,4 @@ class Validator(BaseModel):
         self.ap = average_precision_score(self.y_true, self.y_pred)
         self.r_acc0, self.f_acc0, self.acc0 = self.calculate_acc(self.y_true, self.y_pred, 0.5)
         self.r_acc1, self.f_acc1, self.acc1 = self.calculate_acc(self.y_true, self.y_pred, best_thres)
+        return self.ap, self.r_acc0, self.f_acc0, self.acc0

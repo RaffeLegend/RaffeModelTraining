@@ -8,9 +8,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from data import create_dataloader
 from src.engine.trainer import Trainer
 from src.engine.validator import Validator
-from src.options.train_options import TrainOptions
-from src.options.val_options import ValOptions
-from src.options.data_options import TrainDataOptions, ValDataOptions
+# from src.options.train_options import TrainOptions
+# from src.options.val_options import ValOptions
+# from src.options.data_options import TrainDataOptions, ValDataOptions
 from src.options import config_settings
 from src.engine.strategy.earlystop import EarlyStopping
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
         # Validation
         trainer.eval()
-        ap, r_acc, f_acc, acc = Validator.evaluation(trainer.model, val_loader)
+        ap, r_acc, f_acc, acc = Validator.evaluation()
         val_writer.add_scalar('accuracy', acc, trainer.total_steps)
         val_writer.add_scalar('ap', ap, trainer.total_steps)
         print("(Val @ epoch {}) acc: {}; ap: {}".format(epoch, acc, ap))
