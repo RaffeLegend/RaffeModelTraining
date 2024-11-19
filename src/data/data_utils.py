@@ -89,6 +89,10 @@ def get_data_by_namelist(opt):
 
 def data_augment(img, opt):
     img = np.array(img)
+
+    if not opt.isTrain:
+        return Image.fromarray(img)
+    
     if img.ndim == 2:
         img = np.expand_dims(img, axis=2)
         img = np.repeat(img, 3, axis=2)
