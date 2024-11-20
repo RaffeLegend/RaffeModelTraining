@@ -33,15 +33,15 @@ def log_training_progress(trainer, start_time, train_writer):
 
     train_writer.add_scalar('loss', trainer.loss, trainer.total_steps)
 
-    def log_validation_metrics(epoch, acc, ap):
+def log_validation_metrics(epoch, acc, ap):
 
-        console = Console()
-        table = Table(show_header=True, header_style="bold magenta")
-        table.add_column("Metric", style="dim", width=12)
-        table.add_column("Value")
+    console = Console()
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Metric", style="dim", width=12)
+    table.add_column("Value")
 
-        table.add_row("Epoch", f"{epoch}")
-        table.add_row("Accuracy", f"{acc:.4f}")
-        table.add_row("AP", f"{ap:.4f}")
+    table.add_row("Epoch", f"{epoch}")
+    table.add_row("Accuracy", f"{acc:.4f}")
+    table.add_row("AP", f"{ap:.4f}")
 
-        console.print(table)
+    console.print(table)
