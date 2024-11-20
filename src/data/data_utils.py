@@ -54,7 +54,7 @@ def get_data(opt):
 # load data by folder origanization
 def get_data_by_folder(opt):
     
-    temp = 'train' if opt.data_label == 'train' else 'test'
+    temp = 'train' if opt.data_label == 'train' else 'val'
     
     real_list = get_list(os.path.join(opt.dataset_path,temp), must_contain='0_real')
     fake_list = get_list(os.path.join(opt.dataset_path,temp), must_contain='1_fake')
