@@ -1,5 +1,7 @@
 import os
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from src.options import config_settings
 from src.data import create_dataloader
 from src.engine.validator import Validator
@@ -13,7 +15,7 @@ def evaluate_model(model_path, data_path):
     opt = config_settings()
     opt.test_data.dataset_path = data_path
     opt.validate.model_path = model_path
-    
+
     data_loader = create_dataloader(opt.test_data)
 
     model = torch.load(opt.validate.model_path)
