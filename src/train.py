@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # set early stopping strategy   
     early_stopping = EarlyStopping(patience=opt.train.earlystop_epoch, delta=-0.001, verbose=True)
     start_time = time.time()
-    print ("Length of data loader: %d" %(len(data_loader)))
+    print ("Length of training data loader: %d" %(len(data_loader)))
 
     # start to training
     for epoch in range(opt.train.epochs):
@@ -56,7 +56,7 @@ if __name__ == '__main__':
             trainer.optimize_parameters()
 
             if trainer.total_steps % opt.train.show_loss_freq == 0:
-                log_training_progress(trainer, start_time)
+                log_training_progress(trainer, start_time, train_writer)
                 train_writer.add_scalar('loss', trainer.loss, trainer.total_steps)
 
             if trainer.total_steps in [10,30,50,100,1000,5000,10000] and False: # save models at these iters 

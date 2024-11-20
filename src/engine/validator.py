@@ -56,7 +56,7 @@ class Validator(BaseModel):
     def forward(self):
         with torch.no_grad():
             y_true, y_pred = [], []
-            print ("Length of dataset: %d" %(len(self.loader)))
+            print ("Length of validating dataset: %d" %(len(self.loader)))
             for img, label in self.loader:
                 in_tens = img.cuda()
 
