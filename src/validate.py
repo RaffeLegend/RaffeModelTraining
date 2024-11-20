@@ -10,11 +10,9 @@ import torch
 
 # Assuming you have a function to load your model and data
 
-def evaluate_model(model_path, data_path):
+def evaluate_model():
     # Load the model
     opt = config_settings()
-    opt.test_data.dataset_path = data_path
-    opt.validate.model_path = model_path
 
     data_loader = create_dataloader(opt.test_data)
 
@@ -30,11 +28,5 @@ def evaluate_model(model_path, data_path):
     log_validation_metrics(0, acc, ap)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python validation.py <model_path> <data_path>")
-        sys.exit(1)
     
-    model_path = sys.argv[1]
-    data_path = sys.argv[2]
-    
-    evaluate_model(model_path, data_path)
+    evaluate_model()
