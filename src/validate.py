@@ -16,7 +16,7 @@ def evaluate_model():
 
     data_loader = create_dataloader(opt.test_data)
 
-    model = torch.load(opt.validate.model_path)
+    model = torch.load(opt.test.model_path)
     model.eval()
 
     validator = Validator(opt.val)
