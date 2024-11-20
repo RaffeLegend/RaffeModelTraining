@@ -13,6 +13,7 @@ from src.engine.validator import Validator
 # from src.options.data_options import TrainDataOptions, ValDataOptions
 from src.options import config_settings
 from src.engine.strategy.earlystop import EarlyStopping
+from src.utils.tools import log_training_progress, log_validation_metrics
 
 
 # Entrance
@@ -55,9 +56,8 @@ if __name__ == '__main__':
             trainer.optimize_parameters()
 
             if trainer.total_steps % opt.train.show_loss_freq == 0:
-                print("Train loss: {} at step: {}".format(trainer.loss, trainer.total_steps))
+                log_training_progress(trainer, start_time, train_writer)
                 train_writer.add_scalar('loss', trainer.loss, trainer.total_steps)
-                print("Iter time: ", ((time.time()-start_time)/trainer.total_steps)  )
 
             if trainer.total_steps in [10,30,50,100,1000,5000,10000] and False: # save models at these iters 
                 model.save_networks('model_iters_%s.pth' % model.total_steps)
@@ -73,7 +73,8 @@ if __name__ == '__main__':
         ap, r_acc, f_acc, acc = validator.evaluate()
         val_writer.add_scalar('accuracy', acc, trainer.total_steps)
         val_writer.add_scalar('ap', ap, trainer.total_steps)
-        print("(Val @ epoch {}) acc: {}; ap: {}".format(epoch, acc, ap))
+
+        log_validation_metrics(epoch, acc, ap)
 
         early_stopping(acc, trainer)
         if early_stopping.early_stop:
