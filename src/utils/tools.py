@@ -3,6 +3,7 @@ import time
 
 from rich.console import Console
 from rich.table import Table
+from rich.progress import Progress
 
 
 def mkdirs(paths):
@@ -17,21 +18,18 @@ def mkdir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def log_training_progress(trainer, start_time, train_writer):
-    console = Console()
+def log_training_progress(trainer, start_time):
 
-    table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Metric", style="dim", width=12)
-    table.add_column("Value")
-
-    table.add_row("Train loss", f"{trainer.loss:.4f}")
-    table.add_row("Step", f"{trainer.total_steps}")
+    console1 = Console()
+    console1.rule("[bold red]Training Progress[/bold red]")
+    
+    console1.print(f"[bold yellow]Train Loss:[/bold yellow] {trainer.loss:.4f}")
+    console1.print(f"[bold yellow]Step:[/bold yellow] {trainer.total_steps}")
     iter_time = (time.time() - start_time) / trainer.total_steps
-    table.add_row("Iter time", f"{iter_time:.4f} seconds")
+    console1.print(f"[bold yellow]Iter Time:[/bold yellow] {iter_time:.4f} seconds")
+    
+    console1.rule()
 
-    console.print(table)
-
-    train_writer.add_scalar('loss', trainer.loss, trainer.total_steps)
 
 def log_validation_metrics(epoch, acc, ap):
 
