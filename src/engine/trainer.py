@@ -2,7 +2,7 @@ import torch.nn as nn
 from src.engine.base_trainer import BaseModel
 from src.engine.strategy.weights_init import init_weights
 from src.engine.strategy.optimizer import get_optimizer
-from src.models import Model
+from models.model_imp.base_model import Model
 
 class Trainer(BaseModel):
     def name(self):
