@@ -11,3 +11,4 @@ ftfy
 regex
 pyyaml
 Rich
+mmcv
