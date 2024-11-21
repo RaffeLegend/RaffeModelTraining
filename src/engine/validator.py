@@ -60,7 +60,7 @@ class Validator(BaseModel):
             for img, label in self.loader:
                 in_tens = img.cuda()
 
-                y_pred.extend(self.model(in_tens).sigmoid().flatten().tolist())
+                y_pred.extend(torch.sigmoid(self.model(in_tens)).flatten().tolist())
                 y_true.extend(label.flatten().tolist())
 
         self.y_true, self.y_pred = np.array(y_true), np.array(y_pred)
