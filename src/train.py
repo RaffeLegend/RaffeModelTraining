@@ -4,7 +4,7 @@ import time
 from tensorboardX import SummaryWriter
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-sys.path.append(os.path.join(os.path.dirname(__file__), "external/mmsegmentation"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../external/mmsegmentation"))
 
 from data import create_dataloader
 from src.engine.trainer import Trainer
