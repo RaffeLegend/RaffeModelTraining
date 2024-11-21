@@ -56,7 +56,7 @@ if __name__ == '__main__':
             trainer.optimize_parameters()
 
             if trainer.total_steps % opt.train.show_loss_freq == 0:
-                log_training_progress(trainer, start_time, train_writer)
+                log_training_progress(trainer, start_time)
                 train_writer.add_scalar('loss', trainer.loss, trainer.total_steps)
 
             if trainer.total_steps in [10,30,50,100,1000,5000,10000] and False: # save models at these iters 
