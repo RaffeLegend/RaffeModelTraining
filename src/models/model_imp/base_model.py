@@ -10,7 +10,7 @@ from src.models.model_list import VALID_DECODER_NAMES, VALID_ENCODER_NAMES, MMSE
 
 class Model(AbstractModel):
     def __init__(self, opt):
-        super(Model, self).__init__()
+        super(Model, self).__init__(opt)
 
         self.opt = opt
         self.encoder = None
