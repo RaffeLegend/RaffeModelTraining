@@ -190,9 +190,9 @@ def get_transformer(opt):
     print ("using Official CLIP's normalization")
     transform = transforms.Compose([
             rz_func,
-            transforms.Lambda(lambda img: data_augment(img, opt)),
-            crop_func,
-            flip_func,
+            # transforms.Lambda(lambda img: data_augment(img, opt)),
+            # crop_func,
+            # flip_func,
             transforms.ToTensor(),
             transforms.Normalize( mean=MEAN[stat_from], std=STD[stat_from] ),
         ])
