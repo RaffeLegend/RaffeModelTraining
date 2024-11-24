@@ -82,7 +82,7 @@ if __name__ == '__main__':
             cont_train = trainer.adjust_learning_rate()
             if cont_train:
                 print("Learning rate dropped by 10, continue training...")
-                early_stopping = EarlyStopping(patience=trainer.earlystop_epoch, delta=-0.002, verbose=True)
+                early_stopping = EarlyStopping(patience=opt.trainer.earlystop_epoch, delta=-0.002, verbose=True)
             else:
                 print("Early stopping.")
                 break
