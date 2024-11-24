@@ -159,26 +159,27 @@ rz_dict = {'bilinear': Image.BILINEAR,
            'nearest': Image.NEAREST}
 
 def custom_resize(img, opt):
-    interp = sample_discrete(opt.rz_interp)
-    return TF.resize(img, opt.image_height, interpolation=rz_dict[interp])
+    # interp = sample_discrete(opt.rz_interp)
+    # return TF.resize(img, opt.image_height, interpolation=rz_dict[interp])
+    return TF.resize(img, (opt.image_height, opt.image_width))
 
 
 def get_transformer(opt):
-    if opt.isTrain:
-        crop_func = transforms.RandomCrop(opt.cropSize)
-    elif opt.no_crop:
-        crop_func = transforms.Lambda(lambda img: img)
-    else:
-        crop_func = transforms.CenterCrop(opt.cropSize)
+    # if opt.isTrain:
+    #     crop_func = transforms.RandomCrop(opt.cropSize)
+    # elif opt.no_crop:
+    #     crop_func = transforms.Lambda(lambda img: img)
+    # else:
+    #     crop_func = transforms.CenterCrop(opt.cropSize)
 
-    if opt.isTrain and not opt.no_flip:
-        flip_func = transforms.RandomHorizontalFlip()
-    else:
-        flip_func = transforms.Lambda(lambda img: img)
-    if not opt.isTrain and opt.no_resize:
-        rz_func = transforms.Lambda(lambda img: img)
-    else:
-        rz_func = transforms.Lambda(lambda img: custom_resize(img, opt))
+    # if opt.isTrain and not opt.no_flip:
+    #     flip_func = transforms.RandomHorizontalFlip()
+    # else:
+    #     flip_func = transforms.Lambda(lambda img: img)
+    # if not opt.isTrain and opt.no_resize:
+    #     rz_func = transforms.Lambda(lambda img: img)
+    # else:
+    rz_func = transforms.Lambda(lambda img: custom_resize(img, opt))
         
     stat_from = "imagenet" if opt.encoder.lower().startswith("imagenet") else "clip"
 

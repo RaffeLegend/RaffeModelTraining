@@ -54,18 +54,18 @@ train_data:
   data_label: "train"
   data_source: "folder"
   isTrain: True
-  image_height: 256
-  image_weight: 256
-  augmentation: True
+  image_height: 224
+  image_width: 224
+  augmentation: False
   normalization: True
   batch_size: 256
   shuffle: True
   class_sampler: True
   num_threads: 2
-  no_crop: False
+  no_crop: True
   cropSize: 224
-  no_flip: False
-  no_resize: False
+  no_flip: True
+  no_resize: True
 
   rz_interp: ["bilinear", "bicubic"]
   blur_prob: 0.5
@@ -79,15 +79,15 @@ val_data:
   data_label: "val"
   data_source: "folder"
   isTrain: False
-  image_height: 256
-  image_weight: 256
+  image_height: 224
+  image_width: 224
   augmentation: False
   normalization: True
   batch_size: 256
   shuffle: False
   class_sampler: True
   num_threads: 2
-  no_crop: False
+  no_crop: True
   cropSize: 224
   no_flip: True
   no_resize: True
@@ -95,8 +95,8 @@ val_data:
 test_data:
   <<: *general
   isTrain: False
-  image_height: 256
-  image_weight: 256
+  image_height: 224
+  image_width: 224
   augmentation: False
   normalization: True
   batch_size: 1
