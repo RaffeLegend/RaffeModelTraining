@@ -94,6 +94,7 @@ val_data:
 
 test_data:
   <<: *general
+  data_label: "test"
   isTrain: False
   image_height: 224
   image_width: 224
