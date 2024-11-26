@@ -64,6 +64,7 @@ class Validator(BaseModel):
                 y_true.extend(label.flatten().tolist())
 
         self.y_true, self.y_pred = np.array(y_true), np.array(y_pred)
+        print('Num reals: {}, Num fakes: {}'.format(np.sum(1-self.y_true), np.sum(self.y_true)))
 
     def evaluate(self):
         best_thres = self.find_best_threshold(self.y_true, self.y_pred)
