@@ -31,7 +31,7 @@ def log_training_progress(trainer, start_time):
     console1.rule()
 
 
-def log_validation_metrics(epoch, acc, ap):
+def log_validation_metrics(epoch, acc, r_acc, f_acc, ap):
 
     console = Console()
     table = Table(show_header=True, header_style="bold magenta")
@@ -40,6 +40,8 @@ def log_validation_metrics(epoch, acc, ap):
 
     table.add_row("Epoch", f"{epoch}")
     table.add_row("Accuracy", f"{acc:.4f}")
+    table.add_row("Real Acc", f"{r_acc:.4f}")
+    table.add_row("Fake Acc", f"{f_acc:.4f}")
     table.add_row("AP", f"{ap:.4f}")
 
     console.print(table)

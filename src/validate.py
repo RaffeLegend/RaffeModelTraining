@@ -30,7 +30,7 @@ def evaluate_model():
     validator.forward()
     ap, r_acc, f_acc, acc = validator.evaluate()
 
-    log_validation_metrics(0, acc, ap)
+    log_validation_metrics(0, acc, r_acc, f_acc, ap)
 
 if __name__ == "__main__":
     
