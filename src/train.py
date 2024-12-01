@@ -75,7 +75,7 @@ if __name__ == '__main__':
         val_writer.add_scalar('accuracy', acc, trainer.total_steps)
         val_writer.add_scalar('ap', ap, trainer.total_steps)
 
-        log_validation_metrics(epoch, acc, ap)
+        log_validation_metrics(epoch, acc, r_acc, f_acc, ap)
 
         early_stopping(acc, trainer)
         if early_stopping.early_stop:
