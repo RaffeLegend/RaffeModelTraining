@@ -88,21 +88,22 @@ def get_data_by_namelist(opt):
 def data_augment(img, opt):
     img = np.array(img)
 
-    if not opt.isTrain:
-        return Image.fromarray(img)
-    
-    if img.ndim == 2:
-        img = np.expand_dims(img, axis=2)
-        img = np.repeat(img, 3, axis=2)
+    if opt.augmentations:
+        if not opt.isTrain:
+            return Image.fromarray(img)
 
-    if random() < opt.blur_prob:
-        sig = sample_continuous(opt.blur_sig)
-        gaussian_blur(img, sig)
+        if img.ndim == 2:
+            img = np.expand_dims(img, axis=2)
+            img = np.repeat(img, 3, axis=2)
 
-    if random() < opt.jpg_prob:
-        method = sample_discrete(opt.jpg_method)
-        qual = sample_discrete(opt.jpg_qual)
-        img = jpeg_from_key(img, qual, method)
+        if random() < opt.blur_prob:
+            sig = sample_continuous(opt.blur_sig)
+            gaussian_blur(img, sig)
+
+        if random() < opt.jpg_prob:
+            method = sample_discrete(opt.jpg_method)
+            qual = sample_discrete(opt.jpg_qual)
+            img = jpeg_from_key(img, qual, method)
 
     return Image.fromarray(img)
 
@@ -165,21 +166,26 @@ def custom_resize(img, opt):
 
 
 def get_transformer(opt):
-    # if opt.isTrain:
-    #     crop_func = transforms.RandomCrop(opt.cropSize)
-    # elif opt.no_crop:
-    #     crop_func = transforms.Lambda(lambda img: img)
-    # else:
-    #     crop_func = transforms.CenterCrop(opt.cropSize)
 
-    # if opt.isTrain and not opt.no_flip:
-    #     flip_func = transforms.RandomHorizontalFlip()
-    # else:
-    #     flip_func = transforms.Lambda(lambda img: img)
-    # if not opt.isTrain and opt.no_resize:
-    #     rz_func = transforms.Lambda(lambda img: img)
-    # else:
-    rz_func = transforms.Lambda(lambda img: custom_resize(img, opt))
+    # Crop settings
+    if opt.isTrain and not opt.no_crop:
+        crop_func = transforms.RandomCrop(opt.cropSize)
+    elif opt.no_crop:
+        crop_func = transforms.Lambda(lambda img: img)
+    else:
+        crop_func = transforms.CenterCrop(opt.cropSize)
+
+    # Flip settings
+    if opt.isTrain and not opt.no_flip:
+        flip_func = transforms.RandomHorizontalFlip()
+    else:
+        flip_func = transforms.Lambda(lambda img: img)
+
+    # resize settings
+    if not opt.isTrain and opt.no_resize:
+        rz_func = transforms.Lambda(lambda img: img)
+    else:
+        rz_func = transforms.Lambda(lambda img: custom_resize(img, opt))
         
     stat_from = "imagenet" if opt.encoder.lower().startswith("imagenet") else "clip"
 
@@ -190,9 +196,9 @@ def get_transformer(opt):
     print ("using Official CLIP's normalization")
     transform = transforms.Compose([
             rz_func,
-            # transforms.Lambda(lambda img: data_augment(img, opt)),
-            # crop_func,
-            # flip_func,
+            transforms.Lambda(lambda img: data_augment(img, opt)),
+            crop_func,
+            flip_func,
             transforms.ToTensor(),
             transforms.Normalize( mean=MEAN[stat_from], std=STD[stat_from] ),
         ])
