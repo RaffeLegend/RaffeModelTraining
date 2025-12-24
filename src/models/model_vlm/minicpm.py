@@ -118,7 +118,7 @@ if __name__ == "__main__":
         model_path="openbmb/MiniCPM-V-2_6",
         output_dir="./output/minicpm_finetuned",
         use_deepspeed=True,  # Enable DeepSpeed
-        deepspeed_config="ds_config.json"  # Optional: custom config
+        deepspeed_config="src/options/config/deepspeed_config.json"  # Optional: custom config
     )
     
     # Load model and tokenizer
