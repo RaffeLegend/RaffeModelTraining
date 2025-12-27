@@ -183,6 +183,9 @@ class BaseFineTuner(ABC):
                 dataset,
                 batch_size=batch_size,
                 shuffle=True,
+                num_workers=0,
+                pin_memory=False,
+                persistent_workers=False,
                 collate_fn=self.collate_fn if hasattr(self, 'collate_fn') else None
             )
         

@@ -7,6 +7,11 @@ import json
 
 from src.models.model_vlm.abstract_vlm import BaseFineTuner
 
+import os, psutil, time
+def mem(tag):
+    rss = psutil.Process(os.getpid()).memory_info().rss/1024**3
+    print(f"[MEM] {tag}: RSS={rss:.2f} GB", flush=True)
+
 
 class MiniCPMFineTuner(BaseFineTuner):
     """MiniCPM model fine-tuning implementation"""
@@ -18,8 +23,12 @@ class MiniCPMFineTuner(BaseFineTuner):
             trust_remote_code=True,
             attn_implementation='sdpa',
             torch_dtype=torch.float16,
-            device_map="auto"
+            device_map="cuda", # key setting
+            low_cpu_mem_usage=True,
+            use_safetensors=True
         )
+        self.model.gradient_checkpointing_enable()
+        self.model.config.use_cache = False
     
     def load_tokenizer(self):
         self.tokenizer = AutoTokenizer.from_pretrained(
@@ -28,51 +37,88 @@ class MiniCPMFineTuner(BaseFineTuner):
         )
     
     def prepare_dataset(self, data_path: str) -> Dataset:
-        import pandas as pd
+        import json
+        import os
+        import psutil
         from pathlib import Path
-        
+        from torch.utils.data import Dataset
+
+        print(
+            "RSS(GB) before dataset init:",
+            psutil.Process(os.getpid()).memory_info().rss / 1e9,
+            flush=True
+        )
+
         class MiniCPMDataset(Dataset):
             def __init__(self, data_source):
-                self.data = []
-                
-                # Case 1: JSON file
-                if isinstance(data_source, str) and data_source.endswith('.json'):
-                    with open(data_source, 'r', encoding='utf-8') as f:
+                self.source_type = None
+                self.data = None
+                self.files = None
+
+                # ---------- Case 1: JSON file ----------
+                if isinstance(data_source, str) and data_source.endswith(".json"):
+                    self.source_type = "json"
+                    with open(data_source, "r", encoding="utf-8") as f:
+                        # ⚠️ JSON 本身就没法 mmap，小数据 OK，大数据不建议
                         self.data = json.load(f)
-                
-                # Case 2: Single parquet file
-                elif isinstance(data_source, str) and data_source.endswith('.parquet'):
-                    df = pd.read_parquet(data_source)
-                    self.data = df.to_dict('records')
-                
-                # Case 3: Directory with multiple parquet files
-                elif isinstance(data_source, str) and Path(data_source).is_dir():
-                    parquet_files = list(Path(data_source).glob('*.parquet'))
-                    if parquet_files:
-                        dfs = [pd.read_parquet(f) for f in parquet_files]
-                        combined_df = pd.concat(dfs, ignore_index=True)
-                        self.data = combined_df.to_dict('records')
-                    else:
-                        raise ValueError(f"No parquet files found in {data_source}")
-                
-                # Case 4: List of parquet files
-                elif isinstance(data_source, list):
-                    dfs = [pd.read_parquet(f) for f in data_source]
-                    combined_df = pd.concat(dfs, ignore_index=True)
-                    self.data = combined_df.to_dict('records')
-                
-                # Case 5: HuggingFace dataset name
-                else:
+
+                # ---------- Case 2: Single parquet file ----------
+                elif isinstance(data_source, str) and data_source.endswith(".parquet"):
+                    self.source_type = "hf_parquet"
                     from datasets import load_dataset
-                    dataset = load_dataset(data_source, split='train')
-                    self.data = [dataset[i] for i in range(len(dataset))]
-            
+                    self.data = load_dataset(
+                        "parquet",
+                        data_files=data_source,
+                        split="train"
+                    )
+
+                # ---------- Case 3: Directory of parquet files ----------
+                elif isinstance(data_source, str) and Path(data_source).is_dir():
+                    parquet_files = sorted(Path(data_source).glob("*.parquet"))
+                    if not parquet_files:
+                        raise ValueError(f"No parquet files found in {data_source}")
+
+                    self.source_type = "hf_parquet"
+                    from datasets import load_dataset
+                    self.data = load_dataset(
+                        "parquet",
+                        data_files=[str(p) for p in parquet_files],
+                        split="train"
+                    )
+
+                # ---------- Case 4: List of parquet files ----------
+                elif isinstance(data_source, (list, tuple)):
+                    self.source_type = "hf_parquet"
+                    from datasets import load_dataset
+                    self.data = load_dataset(
+                        "parquet",
+                        data_files=[str(p) for p in data_source],
+                        split="train"
+                    )
+
+                # ---------- Case 5: HuggingFace dataset name ----------
+                else:
+                    self.source_type = "hf_dataset"
+                    from datasets import load_dataset
+                    self.data = load_dataset(data_source, split="train")
+
+                print(
+                    f"[Dataset] type={self.source_type}, size={len(self)}",
+                    flush=True
+                )
+                print(
+                    "RSS(GB) after dataset init:",
+                    psutil.Process(os.getpid()).memory_info().rss / 1e9,
+                    flush=True
+                )
+
             def __len__(self):
                 return len(self.data)
-            
+
             def __getitem__(self, idx):
+                # 这里仍然是 lazy access，不会一次性加载
                 return self.data[idx]
-        
+
         return MiniCPMDataset(data_path)
     
     def process_batch(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
@@ -115,9 +161,9 @@ class MiniCPMFineTuner(BaseFineTuner):
 if __name__ == "__main__":
     # Initialize fine-tuner with DeepSpeed
     finetuner = MiniCPMFineTuner(
-        model_path="openbmb/MiniCPM-V-2_6",
+        model_path="openbmb/MiniCPM-V-4",
         output_dir="./output/minicpm_finetuned",
-        use_deepspeed=True,  # Enable DeepSpeed
+        use_deepspeed=False,  # Enable DeepSpeed
         deepspeed_config="src/options/config/deepspeed_config.json"  # Optional: custom config
     )
     
