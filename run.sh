@@ -7,7 +7,7 @@ cd "$(dirname "$0")"
 # source /path/to/your/virtualenv/bin/activate
 
 # 运行 Python 模块
-python -m src.models.model_vlm.minicpm
+python -m src.models.model_vlm.qwen
 
 # 检查 Python 命令是否成功执行
 if [ $? -eq 0 ]; then

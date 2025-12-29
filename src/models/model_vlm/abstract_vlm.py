@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 import deepspeed
 from torch.utils.data.distributed import DistributedSampler
+# from src.utils.define import safe_collate
+from src.data.vlm_data.base_dataset import BaseMultimodalDataset
 import os
 
 
@@ -68,7 +70,7 @@ class BaseFineTuner(ABC):
         pass
     
     @abstractmethod
-    def prepare_dataset(self, data_path: str) -> Dataset:
+    def prepare_dataset(self, data_path: str) -> BaseMultimodalDataset:
         """
         Prepare dataset (must be implemented by subclass).
         
@@ -80,18 +82,18 @@ class BaseFineTuner(ABC):
         """
         pass
     
-    @abstractmethod
-    def process_batch(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
-        """
-        Process single batch (must be implemented by subclass).
+    # @abstractmethod
+    # def process_batch(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
+    #     """
+    #     Process single batch (must be implemented by subclass).
         
-        Args:
-            batch: Batch data
+    #     Args:
+    #         batch: Batch data
             
-        Returns:
-            Dictionary of processed tensors
-        """
-        pass
+    #     Returns:
+    #         Dictionary of processed tensors
+    #     """
+    #     pass
     
     def setup_lora(
         self,
@@ -163,8 +165,7 @@ class BaseFineTuner(ABC):
         """
         # Prepare data
         dataset = self.prepare_dataset(data_path)
-        
-        # Use DistributedSampler for multi-GPU training
+
         if self.use_deepspeed:
             sampler = DistributedSampler(
                 dataset,
@@ -176,7 +177,7 @@ class BaseFineTuner(ABC):
                 dataset,
                 batch_size=batch_size,
                 sampler=sampler,
-                collate_fn=self.collate_fn if hasattr(self, 'collate_fn') else None
+                collate_fn=dataset.collate_fn
             )
         else:
             dataloader = DataLoader(
@@ -185,8 +186,7 @@ class BaseFineTuner(ABC):
                 shuffle=True,
                 num_workers=0,
                 pin_memory=False,
-                persistent_workers=False,
-                collate_fn=self.collate_fn if hasattr(self, 'collate_fn') else None
+                collate_fn=dataset.collate_fn
             )
         
         # Initialize DeepSpeed
@@ -212,17 +212,18 @@ class BaseFineTuner(ABC):
             
             for batch_idx, batch in enumerate(dataloader):
                 # Process batch data
-                processed_batch = self.process_batch(batch)
+                # processed_batch = self.process_batch(batch)
+                batch = {k: v.to(self.device) for k, v in batch.items()}
                 
                 if self.use_deepspeed:
                     # DeepSpeed training step
-                    outputs = self.model_engine(**processed_batch)
+                    outputs = self.model_engine(**batch)
                     loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
                     self.model_engine.backward(loss)
                     self.model_engine.step()
                 else:
                     # Standard training step
-                    outputs = self.model(**processed_batch)
+                    outputs = self.model(**batch)
                     loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
                     self.optimizer.zero_grad()
                     loss.backward()

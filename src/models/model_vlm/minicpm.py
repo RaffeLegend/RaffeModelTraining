@@ -6,6 +6,7 @@ from transformers import AutoTokenizer, AutoModel
 import json
 
 from src.models.model_vlm.abstract_vlm import BaseFineTuner
+from src.data.vlm_data.rlaif_dataset import HFRLAIFDataset
 
 import os, psutil, time
 def mem(tag):
@@ -15,9 +16,9 @@ def mem(tag):
 
 class MiniCPMFineTuner(BaseFineTuner):
     """MiniCPM model fine-tuning implementation"""
-    
+
     def load_model(self):
-        from transformers import AutoModel
+        from transformers import AutoModel, AutoProcessor
         self.model = AutoModel.from_pretrained(
             self.model_path,
             trust_remote_code=True,
@@ -27,8 +28,10 @@ class MiniCPMFineTuner(BaseFineTuner):
             low_cpu_mem_usage=True,
             use_safetensors=True
         )
-        self.model.gradient_checkpointing_enable()
-        self.model.config.use_cache = False
+        self.processor = AutoProcessor.from_pretrained(
+            self.model_path,
+            trust_remote_code=True
+        )
     
     def load_tokenizer(self):
         self.tokenizer = AutoTokenizer.from_pretrained(
@@ -36,110 +39,117 @@ class MiniCPMFineTuner(BaseFineTuner):
             trust_remote_code=True
         )
     
-    def prepare_dataset(self, data_path: str) -> Dataset:
-        import json
-        import os
-        import psutil
-        from pathlib import Path
-        from torch.utils.data import Dataset
-
-        print(
-            "RSS(GB) before dataset init:",
-            psutil.Process(os.getpid()).memory_info().rss / 1e9,
-            flush=True
+    def prepare_dataset(self, data_path: str) -> HFRLAIFDataset:
+        return HFRLAIFDataset(
+            dataset_name=data_path,
+            split="train",
+            image_size=(224, 224)
         )
 
-        class MiniCPMDataset(Dataset):
-            def __init__(self, data_source):
-                self.source_type = None
-                self.data = None
-                self.files = None
-
-                # ---------- Case 1: JSON file ----------
-                if isinstance(data_source, str) and data_source.endswith(".json"):
-                    self.source_type = "json"
-                    with open(data_source, "r", encoding="utf-8") as f:
-                        # ⚠️ JSON 本身就没法 mmap，小数据 OK，大数据不建议
-                        self.data = json.load(f)
-
-                # ---------- Case 2: Single parquet file ----------
-                elif isinstance(data_source, str) and data_source.endswith(".parquet"):
-                    self.source_type = "hf_parquet"
-                    from datasets import load_dataset
-                    self.data = load_dataset(
-                        "parquet",
-                        data_files=data_source,
-                        split="train"
-                    )
-
-                # ---------- Case 3: Directory of parquet files ----------
-                elif isinstance(data_source, str) and Path(data_source).is_dir():
-                    parquet_files = sorted(Path(data_source).glob("*.parquet"))
-                    if not parquet_files:
-                        raise ValueError(f"No parquet files found in {data_source}")
-
-                    self.source_type = "hf_parquet"
-                    from datasets import load_dataset
-                    self.data = load_dataset(
-                        "parquet",
-                        data_files=[str(p) for p in parquet_files],
-                        split="train"
-                    )
-
-                # ---------- Case 4: List of parquet files ----------
-                elif isinstance(data_source, (list, tuple)):
-                    self.source_type = "hf_parquet"
-                    from datasets import load_dataset
-                    self.data = load_dataset(
-                        "parquet",
-                        data_files=[str(p) for p in data_source],
-                        split="train"
-                    )
-
-                # ---------- Case 5: HuggingFace dataset name ----------
-                else:
-                    self.source_type = "hf_dataset"
-                    from datasets import load_dataset
-                    self.data = load_dataset(data_source, split="train")
-
-                print(
-                    f"[Dataset] type={self.source_type}, size={len(self)}",
-                    flush=True
-                )
-                print(
-                    "RSS(GB) after dataset init:",
-                    psutil.Process(os.getpid()).memory_info().rss / 1e9,
-                    flush=True
-                )
-
-            def __len__(self):
-                return len(self.data)
-
-            def __getitem__(self, idx):
-                # 这里仍然是 lazy access，不会一次性加载
-                return self.data[idx]
-
-        return MiniCPMDataset(data_path)
-    
-    def process_batch(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
-        images = [Image.open(item['image']).convert('RGB') for item in batch]
-        questions = [item['question'] for item in batch]
-        answers = [item['answer'] for item in batch]
+    def process_batch(self, batch):
+        images = [x["image"].convert("RGB") for x in batch]
+        questions = [x["question"] for x in batch]
+        answers = [x["chosen"] for x in batch]
         
-        # Build message format
-        msgs_list = [[{'role': 'user', 'content': q}] for q in questions]
+        print(f"=== Processing {len(images)} images ===")
         
-        # Process inputs
-        inputs = self.model.process_messages(
-            msgs_list[0],
-            images,
-            tokenizer=self.tokenizer
+        # 方法：统一所有图像到一个固定的切片数量
+        # 1. 确保所有图像有相同数量的切片
+        all_slice_counts = []
+        for img in images:
+            processed = self.processor.image_processor(img, return_tensors="pt")
+            slice_count = len(processed["image_sizes"][0])
+            all_slice_counts.append(slice_count)
+        
+        print(f"Slice counts: {all_slice_counts}")
+        
+        # 找到最大切片数
+        max_slices = max(all_slice_counts)
+        print(f"Max slices: {max_slices}")
+        
+        # 2. 构建提示 - 使用最大切片数
+        prompts = []
+        for q in questions:
+            # 为最大切片数创建标记
+            image_tags = "".join([f"<image>./</image>" for _ in range(max_slices)])
+            prompt = f"{image_tags}\nUser: {q}\nAssistant:"
+            prompts.append(prompt)
+        
+        print(f"First prompt (truncated): {prompts[0][:100]}...")
+        
+        # 3. 关键：设置 max_slice_nums 参数
+        try:
+            prompt_inputs = self.processor(
+                text=prompts,
+                images=images,
+                padding=True,  # 这很重要，确保长度一致
+                return_tensors="pt",
+                max_slice_nums=max_slices,  # 告诉处理器期望的最大切片数
+                truncation=True,
+                max_length=2048
+            )
+            print("Batch processing SUCCESS!")
+            
+        except Exception as e:
+            print(f"Batch processing failed: {e}")
+            
+            # 备用方案：逐样本处理并手动填充
+            print("Using sample-by-sample with padding...")
+            all_prompt_inputs = []
+            
+            for i, (img, prompt) in enumerate(zip(images, prompts)):
+                try:
+                    single_input = self.processor(
+                        text=prompt,
+                        images=img,
+                        padding=True,  # 单个样本也填充
+                        return_tensors="pt",
+                        truncation=True,
+                        max_length=2048
+                    )
+                    all_prompt_inputs.append(single_input)
+                    print(f"Sample {i}: {single_input['input_ids'].shape[1]} tokens")
+                except Exception as e2:
+                    print(f"Sample {i} failed: {e2}")
+                    raise
+            
+            # 手动堆叠（现在应该长度相同了）
+            prompt_inputs = {
+                "input_ids": torch.cat([x["input_ids"] for x in all_prompt_inputs], dim=0),
+                "attention_mask": torch.cat([x["attention_mask"] for x in all_prompt_inputs], dim=0),
+                "pixel_values": torch.cat([x["pixel_values"] for x in all_prompt_inputs], dim=0),
+            }
+            print(f"Stacked shapes: {prompt_inputs['input_ids'].shape}")
+        
+        # 4. 处理答案
+        answer_inputs = self.tokenizer(
+            answers,
+            padding=True,
+            return_tensors="pt",
+            add_special_tokens=False,
+            truncation=True,
+            max_length=1024
         )
+        
+        # 5. 拼接
+        input_ids = torch.cat([prompt_inputs["input_ids"], answer_inputs["input_ids"]], dim=1)
+        attention_mask = torch.cat([
+            prompt_inputs["attention_mask"],
+            torch.ones_like(answer_inputs["input_ids"])
+        ], dim=1)
+        
+        # 6. 构建标签
+        labels = input_ids.clone()
+        prompt_len = prompt_inputs["input_ids"].shape[1]
+        labels[:, :prompt_len] = -100
+        
+        print(f"Final shapes: input_ids={input_ids.shape}, labels={labels.shape}")
         
         return {
-            'input_ids': inputs['input_ids'].to(self.device),
-            'pixel_values': inputs.get('pixel_values').to(self.device),
-            'labels': self.tokenizer.encode(answers[0], return_tensors='pt').to(self.device)
+            "input_ids": input_ids.cuda(),
+            "attention_mask": attention_mask.cuda(),
+            "pixel_values": prompt_inputs["pixel_values"].cuda(),
+            "labels": labels.cuda(),
         }
     
     def inference(self, input_data: Dict[str, Any]) -> str:
