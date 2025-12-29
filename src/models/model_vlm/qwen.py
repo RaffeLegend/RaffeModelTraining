@@ -50,7 +50,8 @@ class QwenVLFineTuner(BaseFineTuner):
             dataset_name=data_path,
             split="train",
             image_size=(224, 224),  # Qwen-VL 常用尺寸
-            processor=self.processor
+            processor=self.processor,
+            device=self.model.device
         )
     
     def inference(self, input_data: Dict[str, Any]) -> str:

@@ -10,7 +10,9 @@ import deepspeed
 from torch.utils.data.distributed import DistributedSampler
 # from src.utils.define import safe_collate
 from src.data.vlm_data.base_dataset import BaseMultimodalDataset
+from src.utils.memory import DetailedMemoryMonitor
 import os
+import time
 
 
 class BaseFineTuner(ABC):
@@ -82,19 +84,6 @@ class BaseFineTuner(ABC):
         """
         pass
     
-    # @abstractmethod
-    # def process_batch(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
-    #     """
-    #     Process single batch (must be implemented by subclass).
-        
-    #     Args:
-    #         batch: Batch data
-            
-    #     Returns:
-    #         Dictionary of processed tensors
-    #     """
-    #     pass
-    
     def setup_lora(
         self,
         r: int = 8,
@@ -165,6 +154,7 @@ class BaseFineTuner(ABC):
         """
         # Prepare data
         dataset = self.prepare_dataset(data_path)
+        monitor = DetailedMemoryMonitor()
 
         if self.use_deepspeed:
             sampler = DistributedSampler(
@@ -199,8 +189,20 @@ class BaseFineTuner(ABC):
             )
         else:
             # Training mode
+            
             self.model.train()
             self.model.to(self.device)
+
+            self.model.config.use_cache = False
+            self.model.config.output_attentions = False  
+            self.model.config.output_hidden_states = False
+        
+            # 如果有子配置也关闭
+            if hasattr(self.model.config, 'text_config'):
+                self.model.config.text_config.use_cache = False
+            if hasattr(self.model.config, 'vision_config'):
+                # 视觉模型可能需要特殊处理
+                pass
         
         global_step = 0
         
@@ -211,9 +213,6 @@ class BaseFineTuner(ABC):
             epoch_loss = 0
             
             for batch_idx, batch in enumerate(dataloader):
-                # Process batch data
-                # processed_batch = self.process_batch(batch)
-                batch = {k: v.to(self.device) for k, v in batch.items()}
                 
                 if self.use_deepspeed:
                     # DeepSpeed training step
@@ -222,21 +221,45 @@ class BaseFineTuner(ABC):
                     self.model_engine.backward(loss)
                     self.model_engine.step()
                 else:
-                    # Standard training step
                     outputs = self.model(**batch)
+                    
                     loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
-                    self.optimizer.zero_grad()
-                    loss.backward()
+
+                    ###################################
+                    # 2. 提取loss值并立即清理outputs
+                    loss_value = loss.item() if hasattr(loss, 'item') else float(loss)
+                    
+                    # 删除outputs中的大张量
+                    if hasattr(outputs, 'logits'):
+                        del outputs.logits  # 最大的内存占用
+                    if hasattr(outputs, 'hidden_states'):
+                        del outputs.hidden_states
+                    if hasattr(outputs, 'attentions'):
+                        del outputs.attentions
+                    del outputs
+                    ####################################
+                    if hasattr(loss, 'backward'):
+                        loss.backward()
+
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
+
                     self.optimizer.step()
+
+                    self.optimizer.zero_grad(set_to_none=True)
+
+                    del loss
+                    del batch
                 
-                epoch_loss += loss.item()
+                    torch.cuda.empty_cache()
+
+                epoch_loss += loss_value
                 global_step += 1
-                
+
                 # Logging (only on rank 0)
                 if global_step % 10 == 0 and self.local_rank == 0:
                     print(f"Epoch {epoch+1}/{num_epochs}, "
                           f"Step {global_step}, "
-                          f"Loss: {loss.item():.4f}")
+                          f"Loss: {loss_value}")
                 
                 # Save checkpoint (only on rank 0)
                 if global_step % save_steps == 0 and self.local_rank == 0:
